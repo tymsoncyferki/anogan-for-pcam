@@ -19,7 +19,8 @@ def getSubset(dataset, target):
 def main(opt):
     if type(opt.seed) is int:
         torch.manual_seed(opt.seed)
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cpu")
 
     pipeline = [transforms.Resize([opt.img_size] * 2),
                 transforms.RandomHorizontalFlip()]
