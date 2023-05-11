@@ -2,7 +2,7 @@ import os
 import torch
 import torch.autograd as autograd
 from torchvision.utils import save_image
-
+import csv
 
 """
 These codes are:
@@ -46,6 +46,14 @@ def train_wgangp(opt, generator, discriminator,
     padding_i = len(str(len(dataloader)))
 
     batches_done = 0
+
+    with open('results/train_wgangp_log.csv', 'w', newline='') as csvfile:
+        # Create a writer object
+        writer = csv.writer(csvfile)
+
+        # Write the header row
+        writer.writerow(['Epoch', 'Batch', 'D loss', 'G loss'])
+
     for epoch in range(opt.n_epochs):
         for i, (imgs, _)in enumerate(dataloader):
 
@@ -103,6 +111,15 @@ def train_wgangp(opt, generator, discriminator,
                       f"[Batch {i:{padding_i}}/{len(dataloader)}] "
                       f"[D loss: {d_loss.item():3f}] "
                       f"[G loss: {g_loss.item():3f}]")
+
+                with open('results/train_wgangp_log.csv', 'w', newline='') as csvfile:
+                    # Create a writer object
+                    writer = csv.writer(csvfile)
+
+                    row = [epoch, i, d_loss.item(), g_loss.item()]
+
+                    # Write the row to the CSV file
+                    writer.writerow(row)
 
                 if batches_done % opt.sample_interval == 0:
                     save_image(fake_imgs.data[:25],

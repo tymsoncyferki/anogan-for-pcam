@@ -2,7 +2,7 @@ import os
 import torch
 import torch.nn as nn
 from torchvision.utils import save_image
-
+import csv
 
 """
 These codes are:
@@ -30,6 +30,13 @@ def train_encoder_izif(opt, generator, discriminator, encoder,
 
     padding_epoch = len(str(opt.n_epochs))
     padding_i = len(str(len(dataloader)))
+
+    with open('results/train_encoder_log.csv', 'w', newline='') as csvfile:
+        # Create a writer object
+        writer = csv.writer(csvfile)
+
+        # Write the header row
+        writer.writerow(['Epoch', 'Batch', 'E loss'])
 
     batches_done = 0
     for epoch in range(opt.n_epochs):
@@ -68,6 +75,15 @@ def train_encoder_izif(opt, generator, discriminator, encoder,
                 print(f"[Epoch {epoch:{padding_epoch}}/{opt.n_epochs}] "
                       f"[Batch {i:{padding_i}}/{len(dataloader)}] "
                       f"[E loss: {e_loss.item():3f}]")
+
+                with open('results/train_encoder_log.csv', 'w', newline='') as csvfile:
+                    # Create a writer object
+                    writer = csv.writer(csvfile)
+
+                    row = [epoch, i, e_loss.item()]
+
+                    # Write the row to the CSV file
+                    writer.writerow(row)
 
                 if batches_done % opt.sample_interval == 0:
                     fake_z = encoder(fake_imgs)
