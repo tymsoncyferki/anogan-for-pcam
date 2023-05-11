@@ -10,10 +10,11 @@ from torch.utils.data import Subset
 from fanogan.train_wgangp import train_wgangp
 
 
-def getSubset(dataset, target):
+def getSubset(dataset, target, n):
     print(f'Getting label={target} indices...')
     indices_to_keep = [i for i, (_, label) in enumerate(dataset) if label == target]
-    return Subset(dataset, indices_to_keep)
+    indices = indices_to_keep[::n]
+    return Subset(dataset, indices)
 
 
 def main(opt):
@@ -32,7 +33,7 @@ def main(opt):
 
     transform = transforms.Compose(pipeline)
     dataset = PCAM(opt.train_root, split='train', transform=transform, download=opt.force_download)
-    normal_dataset = getSubset(dataset, 0)
+    normal_dataset = getSubset(dataset, 0, opt.dataset_size)
     train_dataloader = DataLoader(normal_dataset, batch_size=opt.batch_size,
                                   shuffle=False)
 
@@ -83,6 +84,8 @@ if __name__ == "__main__":
                         help="interval betwen image samples")
     parser.add_argument("--seed", type=int, default=None,
                         help="value of a random seed")
+    parser.add_argument("--dataset_size", type=int, default=1,
+                        help="divides dataset by n")
     opt = parser.parse_args()
 
     main(opt)
